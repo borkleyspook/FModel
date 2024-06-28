@@ -561,6 +561,9 @@ public class CUE4ParseViewModel : ViewModel
     public void AnimationFolder(CancellationToken cancellationToken, TreeItem folder)
         => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Animations | EBulkType.Auto));
 
+    public void AudioFolder(CancellationToken cancellationToken, TreeItem folder)
+        => BulkFolder(cancellationToken, folder, asset => Extract(cancellationToken, asset.FullPath, TabControl.HasNoTabs, EBulkType.Audio | EBulkType.Auto));
+
     public void Extract(CancellationToken cancellationToken, string fullPath, bool addNewTab = false, EBulkType bulk = EBulkType.None)
     {
         Log.Information("User DOUBLE-CLICKED to extract '{FullPath}'", fullPath);
@@ -576,6 +579,7 @@ public class CUE4ParseViewModel : ViewModel
         var updateUi = !HasFlag(bulk, EBulkType.Auto);
         var saveProperties = HasFlag(bulk, EBulkType.Properties);
         var saveTextures = HasFlag(bulk, EBulkType.Textures);
+        var saveAudio = HasFlag(bulk, EBulkType.Audio);
         switch (ext)
         {
             case "uasset":
@@ -662,6 +666,20 @@ public class CUE4ParseViewModel : ViewModel
                 break;
             }
             case "bnk":
+            case "wav":
+                {
+                    if (Provider.TryCreateReader(fullPath, out var archive))
+                    {
+                        var wwise = new WwiseReader(archive);
+                        TabControl.SelectedTab.SetDocumentText(JsonConvert.SerializeObject(wwise, Formatting.Indented), saveProperties, updateUi);
+                        foreach (var (name, data) in wwise.WwiseEncodedMedias)
+                        {
+                            SaveAndPlaySound(fullPath.SubstringBeforeWithLast("/") + name, "WEM", data);
+                        }
+                    }
+
+                    break;
+                }
             case "pck":
             {
                 if (Provider.TryCreateReader(fullPath, out var archive))

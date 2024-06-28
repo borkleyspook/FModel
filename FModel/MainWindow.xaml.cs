@@ -213,6 +213,18 @@ public partial class MainWindow
             });
         }
     }
+    private async void OnFolderAudioClick(object sender, RoutedEventArgs e)
+    {
+        if (AssetsFolderName.SelectedItem is TreeItem folder)
+        {
+            await _threadWorkerView.Begin(cancellationToken => { _applicationView.CUE4Parse.AudioFolder(cancellationToken, folder); });
+            FLogger.Append(ELog.Information, () =>
+            {
+                FLogger.Text("Successfully saved ", Constants.WHITE);
+                FLogger.Link(folder.PathAtThisPoint, UserSettings.Default.TextureDirectory, true);
+            });
+        }
+    }
 
     private async void OnFolderModelClick(object sender, RoutedEventArgs e)
     {

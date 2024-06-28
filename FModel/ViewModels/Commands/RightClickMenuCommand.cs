@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Linq;
 using System.Threading;
 using FModel.Framework;
@@ -56,6 +56,14 @@ public class RightClickMenuCommand : ViewModelCommand<ApplicationViewModel>
                         Thread.Yield();
                         cancellationToken.ThrowIfCancellationRequested();
                         contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Textures);
+                    }
+                    break;
+                case "Assets_Save_Audio":
+                    foreach (var asset in assetItems)
+                    {
+                        Thread.Yield();
+                        cancellationToken.ThrowIfCancellationRequested();
+                        contextViewModel.CUE4Parse.Extract(cancellationToken, asset.FullPath, false, EBulkType.Audio | EBulkType.Auto);
                     }
                     break;
                 case "Assets_Save_Models":

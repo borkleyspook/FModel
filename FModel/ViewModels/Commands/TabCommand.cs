@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using AdonisUI.Controls;
 using FModel.Framework;
 using FModel.Services;
@@ -44,6 +44,12 @@ public class TabCommand : ViewModelCommand<TabItem>
                 await _threadWorkerView.Begin(cancellationToken =>
                 {
                     _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.FullPath, false, EBulkType.Textures);
+                });
+                break;
+            case "Asset_Save_Audio":
+                await _threadWorkerView.Begin(cancellationToken =>
+                {
+                    _applicationView.CUE4Parse.Extract(cancellationToken, contextViewModel.FullPath, false, EBulkType.Audio | EBulkType.Auto);
                 });
                 break;
             case "Asset_Save_Models":
